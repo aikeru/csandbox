@@ -21,6 +21,11 @@ void main(int argc, char *argv[]) {
 
 	if(argc < 2) {
 		printf("Usage: %s filename mode outfile", argv[0]);
+		printf("\r\n	valid mode's are");
+		printf("\r\n		s: scan the file for which newline it uses");
+		printf("\r\n		r: write outfile replacing \\n with \\r");
+		printf("\r\n		n: write outfile replacing \\r with \\n");
+		printf("\r\n		c: write outfile normalizing to \\r\\n (CRLF)");
 		return;
 	}
 	if(argc  < 3) {
