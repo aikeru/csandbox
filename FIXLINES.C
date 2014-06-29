@@ -6,25 +6,18 @@
 #include <stdio.h>
 #include <string.h>
 
+int mode_crlf = 0;
+int mode_r = 1;
+int mode_n = 2;
+int mode_scan = 3;
+
 void scanfile(char *scanFile);
+void writeFile(char *inFile, char *outDest, int mode);
 
 void main(int argc, char *argv[]) {
-	FILE *origFile;
-	FILE *outFile;
-	char inputStr[255];
-	char outputStr[257];
 	char outDest[255];
-	char *readPtr;
-	char inputChar;
-	char lastChar;
-	int i = 0;
-	int read = 0;
-	int mode_crlf = 0;
-	int mode_r = 1;
-	int mode_n = 2;
-	int mode_scan = 3;
+	
 	int mode = mode_n;
-	int types_found = 0;
 
 	if(argc < 2) {
 		printf("Usage: %s filename mode outfile", argv[0]);
@@ -50,7 +43,18 @@ void main(int argc, char *argv[]) {
 		strcpy(outDest, argv[3]);
 	}
 
-	origFile = fopen(argv[1], "r");
+	writeFile(argv[1], outDest, mode);
+}
+
+void writeFile(char *inFile, char *outDest, int mode) {
+ 	FILE *origFile;
+	FILE *outFile;
+	
+	char inputChar;
+	char lastChar;
+	int read;
+	
+	origFile = fopen(inFile, "r");
 	outFile = fopen(outDest, "w");
 	do {
 		read = fgetc(origFile);
