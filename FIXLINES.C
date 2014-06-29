@@ -50,14 +50,7 @@ void main(int argc, char *argv[]) {
 		if(read != (int)EOF) {
 			lastChar = inputChar;
 			inputChar = (char)read;
-			printf("\r\nRead %s and %d", &inputChar, &read);
 			if(mode == mode_crlf) {
-				if(inputChar == '\r') {
-					printf("Found a slash R");
-				}
-				if(inputChar == '\n') {
-					printf("Found a slash N");
-				}
 				if(inputChar == '\n' && lastChar != '\r') {
 					fputc((int)'\r', outFile);
 				} else if(lastChar == '\r' && inputChar != '\n') {
@@ -95,9 +88,9 @@ void main(int argc, char *argv[]) {
 	} while(read != (int)EOF);
 
 	if(mode == mode_scan) {
-		if(types_found == 1) printf("Found slash Ns");
-		if(types_found == 2) printf("Found slash Rs");
-		if(types_found == 3) printf("Found both chars");
+		if(types_found == 1) printf("\r\nFound \\n's");
+		if(types_found == 2) printf("\r\nFound \\r's");
+		if(types_found == 3) printf("\r\nFound \\r's and \\n's");
 	}
 
 	fclose(origFile);
