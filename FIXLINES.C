@@ -1,10 +1,12 @@
 /*
   FIXLINES.C
   A simple C program to convert between line endings for UNIX, MAC and DOS
-
+  Copyright (C) 2014 aikeru
 */
 #include <stdio.h>
 #include <string.h>
+
+void scanfile(char *scanFile);
 
 void main(int argc, char *argv[]) {
 	FILE *origFile;
@@ -25,7 +27,6 @@ void main(int argc, char *argv[]) {
 	int types_found = 0;
 
 	if(argc < 2) {
-		printf("FIXLINES by aikeru");
 		printf("Usage: %s filename mode outfile", argv[0]);
 		return;
 	}
@@ -37,6 +38,12 @@ void main(int argc, char *argv[]) {
 		if(argv[2][0] == 'c') mode = mode_crlf;
 		if(argv[2][0] == 's') mode = mode_scan;
 	}
+
+	if(mode == mode_scan) {
+		scanfile(argv[1]);
+		return;
+	}
+
 	if(argc < 4) {
 		strcpy(outDest, "output.c");
 	} else {
@@ -51,6 +58,12 @@ void main(int argc, char *argv[]) {
 			lastChar = inputChar;
 			inputChar = (char)read;
 			if(mode == mode_crlf) {
+				if(inputChar == '\r') {
+					printf("Found a slash R");
+				}
+				if(inputChar == '\n') {
+					printf("Found a slash N");
+				}
 				if(inputChar == '\n' && lastChar != '\r') {
 					fputc((int)'\r', outFile);
 				} else if(lastChar == '\r' && inputChar != '\n') {
@@ -64,36 +77,50 @@ void main(int argc, char *argv[]) {
 				if(inputChar == '\r') {
 					inputChar = '\n';
 				}
-			} else if(mode == mode_scan) {
-				if(inputChar == '\r') {
-					if(types_found == 1) {
-						types_found = 3;
-					} else {
-						types_found = 2;
-					}
-				} else if(inputChar == '\n') {
-					if(types_found == 2) {
-						types_found = 3;
-					} else {
-						types_found = 1;
-					}
-
-				}
-
 			}
-
-			if(mode != mode_scan) fputc((int)inputChar, outFile);
+			fputc((int)inputChar, outFile);
 
 		}
 	} while(read != (int)EOF);
 
-	if(mode == mode_scan) {
-		if(types_found == 1) printf("\r\nFound \\n's");
-		if(types_found == 2) printf("\r\nFound \\r's");
-		if(types_found == 3) printf("\r\nFound \\r's and \\n's");
-	}
-
 	fclose(origFile);
 	fclose(outFile);
 
-}
+}
+
+void scanfile(char *scanFile) {
+
+	FILE *origFile = fopen(scanFile, "r");
+	char inputChar;
+	int types_found = 0;
+	int read = 0;
+	do {
+		read = fgetc(origFile);
+		if(read != (int)EOF) {
+			inputChar = (char)read;
+			if(inputChar == '\r') {
+				if(types_found == 1) {
+					types_found = 3;
+				} else {
+					types_found = 2;
+				}
+			} else if(inputChar == '\n') {
+				if(types_found == 2) {
+					types_found = 3;
+				} else {
+					types_found = 1;
+				}
+
+			}
+
+		}
+	} while(read != (int)EOF);
+
+	if(types_found == 1) printf("Found \\n's");
+	if(types_found == 2) printf("Found \\r's");
+	if(types_found == 3) printf("Found \\n's and \\r's");
+	if(types_found == 0) printf("Didn't find anything.");
+	fclose(origFile);
+
+	return;
+}
