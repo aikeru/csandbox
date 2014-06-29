@@ -67,12 +67,6 @@ void writeFile(char *inFile, char *outDest, int mode) {
 			lastChar = inputChar;
 			inputChar = (char)read;
 			if(mode == mode_crlf) {
-				if(inputChar == '\r') {
-					printf("Found a slash R");
-				}
-				if(inputChar == '\n') {
-					printf("Found a slash N");
-				}
 				if(inputChar == '\n' && lastChar != '\r') {
 					fputc((int)'\r', outFile);
 				} else if(lastChar == '\r' && inputChar != '\n') {
